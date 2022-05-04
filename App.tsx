@@ -1,17 +1,20 @@
 import { useState, useEffect, PropsWithChildren } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import {
   GestureDetector,
   Gesture,
   Directions,
 } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 
 import { playSound, fadeOutSound } from './services/sound';
 
-const Component = () => {
+const Component = (navigation: any) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -29,13 +32,25 @@ const Component = () => {
   );
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: NativeStackScreenProps<any>) => {
   const fling = Gesture.Fling();
   fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
   return (
     <GestureDetector gesture={fling}>
-      <Component />
+      <View>
+        <Component />
+        <Button title="second" onPress={() => navigation.navigate('Second')} />
+      </View>
     </GestureDetector>
+  );
+};
+
+const SecondScreen = ({ navigation }: NativeStackScreenProps<any>) => {
+  return (
+    <View>
+      <Text>Hello</Text>
+      <Button title="back" onPress={() => navigation.goBack()} />
+    </View>
   );
 };
 
@@ -46,6 +61,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Main" component={HomeScreen} />
+        <Stack.Screen name="Second" component={SecondScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
