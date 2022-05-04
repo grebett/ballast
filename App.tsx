@@ -1,3 +1,4 @@
+// import { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import {
@@ -6,9 +7,11 @@ import {
   Directions,
 } from "react-native-gesture-handler";
 
+import { playSound, fadeOutSound } from './services/sound';
+
 export default function App() {
   const fling = Gesture.Fling();
-  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(console.log);
+  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
 
   return (
     <GestureDetector gesture={fling}>
