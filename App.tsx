@@ -14,7 +14,7 @@ import {
 
 import { playSound, fadeOutSound } from './services/sound';
 
-const Component = (navigation: any) => {
+const Component = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -32,36 +32,42 @@ const Component = (navigation: any) => {
   );
 };
 
-const HomeScreen = ({ navigation }: NativeStackScreenProps<any>) => {
+// https://reactnavigation.org/docs/typescript/
+type StackParamList = {
+  HomeScreen: undefined,
+  SecondScreen: { some: string };
+};
+
+const HomeScreen = ({ navigation }: NativeStackScreenProps<StackParamList, 'HomeScreen'>) => {
   const fling = Gesture.Fling();
   fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
   return (
     <GestureDetector gesture={fling}>
       <View>
         <Component />
-        <Button title="second" onPress={() => navigation.navigate('Second')} />
+        <Button title="second" onPress={() => navigation.navigate('SecondScreen', { some: 'param' })} />
       </View>
     </GestureDetector>
   );
 };
 
-const SecondScreen = ({ navigation }: NativeStackScreenProps<any>) => {
+const SecondScreen = ({ route, navigation }: NativeStackScreenProps<StackParamList, 'SecondScreen'>) => {
   return (
     <View>
-      <Text>Hello</Text>
+      <Text>{route.params.some} Hello</Text>
       <Button title="back" onPress={() => navigation.goBack()} />
     </View>
   );
 };
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Main" component={HomeScreen} />
-        <Stack.Screen name="Second" component={SecondScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="SecondScreen" component={SecondScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
