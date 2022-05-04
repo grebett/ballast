@@ -7,17 +7,11 @@ import {
 } from "react-native-gesture-handler";
 
 export default function App() {
-  const flingLeft = Gesture.Fling();
-  flingLeft.direction(Directions.LEFT).onEnd(console.log);
-
-  const flingRight = Gesture.Fling();
-  flingRight.direction(Directions.RIGHT).onEnd(console.log);
-
-  const flings = Gesture.Simultaneous(flingLeft, flingRight)
-
+  const fling = Gesture.Fling();
+  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(console.log);
 
   return (
-    <GestureDetector gesture={flings}>
+    <GestureDetector gesture={fling}>
       <View style={styles.container}>
         <Text>Open up App.tsx to start working on your app or not!</Text>
         <StatusBar style="auto" />
