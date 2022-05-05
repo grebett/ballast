@@ -15,7 +15,7 @@ import {
 import { playSound, fadeOutSound } from './services/sound';
 import { AnotherComponent } from './AnotherComponent';
 
-import { apiSauce } from './services/api/api';
+import { getBooks } from './services/api/book-api';
 
 const Component = () => {
   const styles = StyleSheet.create({
@@ -76,12 +76,8 @@ const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
   useEffect(() => {
-    // API SAUCE
-    (async () => {
-      apiSauce.setup();
-      // console.log(await (await apiSauce.api?.get('/book'))?.data);
-    })();
-  });
+    getBooks().then((books) => console.log(books));
+  }, []);
 
   return (
     <NavigationContainer>
