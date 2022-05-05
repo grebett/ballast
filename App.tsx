@@ -15,7 +15,8 @@ import {
 import { playSound, fadeOutSound } from './services/sound';
 import { AnotherComponent } from './AnotherComponent';
 
-import { getBooks } from './services/api/book-api';
+import { getBooks } from './services/api/bookApi';
+import { BookModel } from './models/book';
 
 const Component = () => {
   const styles = StyleSheet.create({
@@ -77,6 +78,15 @@ const Stack = createNativeStackNavigator<StackParamList>();
 export default function App() {
   useEffect(() => {
     getBooks().then((books) => console.log(books));
+    const book = BookModel.create({
+      id: 0,
+      title: 'coucou',
+      author: 'grebett',
+      cover: 'some string',
+      status: 'dead',
+      totalEpisodes: 2,
+    });
+    console.log(book);
   }, []);
 
   return (
