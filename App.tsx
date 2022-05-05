@@ -13,6 +13,9 @@ import {
 } from '@react-navigation/native-stack';
 
 import { playSound, fadeOutSound } from './services/sound';
+import { AnotherComponent } from './AnotherComponent';
+
+import { apiSauce } from './services/api/api';
 
 const Component = () => {
   const styles = StyleSheet.create({
@@ -34,24 +37,33 @@ const Component = () => {
 
 // https://reactnavigation.org/docs/typescript/
 type StackParamList = {
-  HomeScreen: undefined,
+  HomeScreen: undefined;
   SecondScreen: { some: string };
 };
 
-const HomeScreen = ({ navigation }: NativeStackScreenProps<StackParamList, 'HomeScreen'>) => {
+const HomeScreen = ({
+  navigation,
+}: NativeStackScreenProps<StackParamList, 'HomeScreen'>) => {
   const fling = Gesture.Fling();
   fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
   return (
     <GestureDetector gesture={fling}>
       <View>
         <Component />
-        <Button title="second" onPress={() => navigation.navigate('SecondScreen', { some: 'param' })} />
+        <AnotherComponent />
+        <Button
+          title="second"
+          onPress={() => navigation.navigate('SecondScreen', { some: 'param' })}
+        />
       </View>
     </GestureDetector>
   );
 };
 
-const SecondScreen = ({ route, navigation }: NativeStackScreenProps<StackParamList, 'SecondScreen'>) => {
+const SecondScreen = ({
+  route,
+  navigation,
+}: NativeStackScreenProps<StackParamList, 'SecondScreen'>) => {
   return (
     <View>
       <Text>{route.params.some} Hello</Text>
@@ -63,6 +75,14 @@ const SecondScreen = ({ route, navigation }: NativeStackScreenProps<StackParamLi
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
+  useEffect(() => {
+    // API SAUCE
+    (async () => {
+      apiSauce.setup();
+      // console.log(await (await apiSauce.api?.get('/book'))?.data);
+    })();
+  });
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
