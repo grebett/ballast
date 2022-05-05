@@ -1,18 +1,16 @@
-// import { GeneralApiProblem } from './api-problem';
-// import { Book } from '../../models/book/book';
-// import { EpisodeSummary } from '../../models/episodeSummary/episodeSummary';
-// import { Episode } from '../../models/episode/episode';
+type ResponseStatus = 'ok' | 'error' | 'bad-data';
 
-// export interface User {
-//   id: number;
-//   name: string;
-// }
+type Book = {
+  id: number;
+  title: string;
+  author: string;
+  cover: string;
+  totalEpisodes: number;
+  status: 'active' | 'soon';
+};
 
-// export type GetUsersResult = { kind: 'ok'; users: User[] } | GeneralApiProblem;
-// export type GetUserResult = { kind: 'ok'; user: User } | GeneralApiProblem;
-
-// export type GetBooksResult = { kind: 'ok'; books: Book[] } | GeneralApiProblem;
-// export type GetBookResult = { kind: 'ok'; book: Book } | GeneralApiProblem;
+export type GetBooksResult = { kind: ResponseStatus; books: Book[] };
+export type GetBookResult = { kind: ResponseStatus; book: Book };
 
 // export type GetEpisodeSummariesResult =
 //   | { kind: 'ok'; episodeSummaries: EpisodeSummary[] }

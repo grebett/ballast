@@ -12,11 +12,10 @@ import {
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 
-import { playSound, fadeOutSound } from './services/sound';
+import { playSound } from './services/sound';
 import { AnotherComponent } from './AnotherComponent';
 
-import { getBooks } from './services/api/bookApi';
-import { BookModel } from './models/book';
+import { BookStoreModel } from './models/bookStore';
 
 const Component = () => {
   const styles = StyleSheet.create({
@@ -45,13 +44,25 @@ type StackParamList = {
 const HomeScreen = ({
   navigation,
 }: NativeStackScreenProps<StackParamList, 'HomeScreen'>) => {
+  // Fling gesture
   const fling = Gesture.Fling();
   fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
+
+  // bookStore example
+  const [books, setBooks] = useState<any>([]);
+  useEffect(() => {
+    const bookStore = BookStoreModel.create({});
+    bookStore.getBooks().then(() => {
+      setBooks(bookStore.books);
+    });
+  }, []);
+
   return (
     <GestureDetector gesture={fling}>
       <View>
         <Component />
         <AnotherComponent />
+        <Text>{books[0]?.title}</Text>
         <Button
           title="second"
           onPress={() => navigation.navigate('SecondScreen', { some: 'param' })}
@@ -73,22 +84,9 @@ const SecondScreen = ({
   );
 };
 
+// Main App & Navigation
 const Stack = createNativeStackNavigator<StackParamList>();
-
 export default function App() {
-  useEffect(() => {
-    getBooks().then((books) => console.log(books));
-    const book = BookModel.create({
-      id: 0,
-      title: 'coucou',
-      author: 'grebett',
-      cover: 'some string',
-      status: 'dead',
-      totalEpisodes: 2,
-    });
-    console.log(book);
-  }, []);
-
   return (
     <NavigationContainer>
       <Stack.Navigator>

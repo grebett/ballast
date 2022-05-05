@@ -1,31 +1,29 @@
 import axios from 'axios';
+import { GetBooksResult } from '../../services/api/api.types';
 
-// import { GetBooksResult, GetBookResult, Book } from "./api.types"
-
-export const getBooks = async (): Promise<any> => {
-  // async getBooks(): Promise<GetBooksResult> {
+export const getBooks = async (): Promise<GetBooksResult> => {
   try {
-    // make the api call
-    const response = await axios.get(`http://10.0.0.14:3000/api/book`);
+    // make the api call ===> TODO: config env everything and sync?
+    const response = await axios.get<GetBooksResult['books']>(`http://10.0.0.14:3000/api/book`);
 
     // the typical ways to die when calling an api
     if (response.status !== 200) {
-      console.log(response.status);
-      return { kind: 'error' };
+      console.error('oops', response);
+      return { kind: 'error', books: [] };
     }
-
-    // // transform the data into the format we are expecting
-      const resultBooks: any[] = response.data.map((item: any) => ({
+  
+    // transform the data into the format we are expecting (mapper)
+      const resultBooks = response.data.map((item) => ({
         id: item.id,
         title: item.title,
         author: item.author,
         cover: item.cover,
-        episodes: item.episodes, // number
+        totalEpisodes: item.totalEpisodes,
         status: item.status,
       }))
     return { kind: 'ok', books: resultBooks };
   } catch (e) {
     console.error('oops', e);
-    return { kind: 'bad-data' };
+    return { kind: 'bad-data', books: [] };
   }
 };
