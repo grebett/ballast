@@ -8,7 +8,7 @@ export const BookModel = types.model('Book').props({
   title: types.string,
   author: types.string,
   cover: types.string,
-  totalEpisodes: types.integer,
+  totalChapters: types.integer,
   status: types.string,
 });
 

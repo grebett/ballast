@@ -1,24 +1,35 @@
-import { Instance, SnapshotOut, types } from "mobx-state-tree"
-import { BookStoreModel } from "../book-store/book-store"
-import { EpisodeSummaryStoreModel } from "../episodeSummary-store/episodeSummary-store"
-import { EpisodeStoreModel } from "../episode-store/episode-store"
+import { createContext, useContext } from 'react';
+import { Instance, SnapshotOut, types, onSnapshot } from 'mobx-state-tree';
 
-/**
- * A RootStore model.
- */
-// prettier-ignore
-export const RootStoreModel = types.model("RootStore").props({
-  bookStore: types.optional(BookStoreModel, {} as any),
-  episodeSummaryStore: types.optional(EpisodeSummaryStoreModel, {} as any),
-  episodeStore: types.optional(EpisodeStoreModel, {} as any),
-})
+import { BookStoreModel } from './bookStore';
 
-/**
- * The RootStore instance.
- */
+// Functions
+const setupRootStore = async () => {
+  const rootStore = RootStoreModel.create({});
+  onSnapshot(rootStore, (snapshot) => console.log(snapshot));
+  return rootStore;
+};
+
+const createRootStoreExports = () => {
+  const RootStoreContext = createContext<RootStore>({} as RootStore);
+  const RootStoreProvider = RootStoreContext.Provider;
+  const useStores = () => useContext(RootStoreContext);
+
+  return {
+    RootStoreProvider, // used in App.tsx as a HOC
+    useStores, // custom hook to call the context
+  };
+};
+
+// Main
+const RootStoreModel = types.model('RootStore').props({
+  bookStore: types.optional(BookStoreModel, {}),
+});
+
+
+// Exports
+export const { useStores, RootStoreProvider } = createRootStoreExports();
+export { setupRootStore };
+
 export interface RootStore extends Instance<typeof RootStoreModel> {}
-
-/**
- * The data of a RootStore.
- */
 export interface RootStoreSnapshot extends SnapshotOut<typeof RootStoreModel> {}

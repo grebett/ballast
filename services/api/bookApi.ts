@@ -18,7 +18,7 @@ export const getBooks = async (): Promise<GetBooksResult> => {
         title: item.title,
         author: item.author,
         cover: item.cover,
-        totalEpisodes: item.totalEpisodes,
+        totalChapters: item.totalChapters,
         status: item.status,
       }))
     return { kind: 'ok', books: resultBooks };

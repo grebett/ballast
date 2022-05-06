@@ -13,10 +13,15 @@ import {
 } from '@react-navigation/native-stack';
 
 import { playSound } from './services/sound';
-import { AnotherComponent } from './AnotherComponent';
+import { AnotherComponent } from './AnotherComponent'; // TEMP OTHER_COMPONENT
 
-import { BookStoreModel } from './models/bookStore';
+import {
+  RootStore,
+  RootStoreProvider,
+  setupRootStore,
+} from './models/rootStore';
 
+// TEMP COMPONENT 1
 const Component = () => {
   const styles = StyleSheet.create({
     container: {
@@ -35,6 +40,7 @@ const Component = () => {
   );
 };
 
+// TODO: NAVIGATION SHOULD BE TACKLED NEXT
 // https://reactnavigation.org/docs/typescript/
 type StackParamList = {
   HomeScreen: undefined;
@@ -44,25 +50,15 @@ type StackParamList = {
 const HomeScreen = ({
   navigation,
 }: NativeStackScreenProps<StackParamList, 'HomeScreen'>) => {
-  // Fling gesture
+  // TEMP: Fling gesture
   const fling = Gesture.Fling();
   fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
-
-  // bookStore example
-  const [books, setBooks] = useState<any>([]);
-  useEffect(() => {
-    const bookStore = BookStoreModel.create({});
-    bookStore.getBooks().then(() => {
-      setBooks(bookStore.books);
-    });
-  }, []);
 
   return (
     <GestureDetector gesture={fling}>
       <View>
         <Component />
         <AnotherComponent />
-        <Text>{books[0]?.title}</Text>
         <Button
           title="second"
           onPress={() => navigation.navigate('SecondScreen', { some: 'param' })}
@@ -87,12 +83,21 @@ const SecondScreen = ({
 // Main App & Navigation
 const Stack = createNativeStackNavigator<StackParamList>();
 export default function App() {
+  const [rootStore, setRootStore] = useState<RootStore | undefined>(undefined);
+
+  useEffect(() => {
+    setupRootStore().then(setRootStore);
+  }, []);
+
+  if (!rootStore) return null;
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="SecondScreen" component={SecondScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <RootStoreProvider value={rootStore}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="SecondScreen" component={SecondScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </RootStoreProvider>
   );
 }
