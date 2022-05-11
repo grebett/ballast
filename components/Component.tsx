@@ -5,15 +5,18 @@ export const Component = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#faf',
+      backgroundColor: 'steelblue',
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    text: {
+      color: 'white',
     },
   });
 
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app or not!</Text>
+      <Text style={styles.text}>The text is immediately rendered!</Text>
       <StatusBar style="auto" />
     </View>
   );

@@ -6,7 +6,7 @@ import { BookStoreModel } from './bookStore';
 // Functions
 const setupRootStore = async () => {
   const rootStore = RootStoreModel.create({});
-  onSnapshot(rootStore, (snapshot) => console.log(snapshot));
+  // onSnapshot(rootStore, (snapshot) => console.log(snapshot));
   return rootStore;
 };
 
