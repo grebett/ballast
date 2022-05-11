@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 export async function loadString(key: string): Promise<string | null> {
   try {
     return await AsyncStorage.getItem(key);

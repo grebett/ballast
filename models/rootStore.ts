@@ -26,7 +26,6 @@ const RootStoreModel = types.model('RootStore').props({
   bookStore: types.optional(BookStoreModel, {}),
 });
 
-
 // Exports
 export const { useStores, RootStoreProvider } = createRootStoreExports();
 export { setupRootStore };

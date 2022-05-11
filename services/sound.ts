@@ -1,5 +1,5 @@
-import { Audio } from "expo-av";
-import { easeInOutSine } from "../utils/easings";
+import { Audio } from 'expo-av';
+import { easeInOutSine } from '../utils/easings';
 
 const fadeOut = (sound: Audio.Sound, duration: number) => {
   const INTERVAL_MS = 50;
@@ -18,11 +18,11 @@ const fadeOut = (sound: Audio.Sound, duration: number) => {
 };
 
 export const playSound = async () => {
-  console.log("💿 Loading Sound");
+  console.log('💿 Loading Sound');
   const { sound } = await Audio.Sound.createAsync({
-    uri: "https://filesamples.com/samples/audio/mp3/sample4.mp3",
+    uri: 'https://filesamples.com/samples/audio/mp3/sample4.mp3',
   });
-  console.log("💿 Playing Sound");
+  console.log('💿 Playing Sound');
   await sound.playAsync();
   return sound;
 };
@@ -33,7 +33,7 @@ export const fadeOutSound = (sound: Audio.Sound) => {
 };
 
 export const unloadSound = (sound: Audio.Sound) => {
-  console.log("💿 Unloading Sound");
+  console.log('💿 Unloading Sound');
   sound.unloadAsync();
   return sound;
 };
