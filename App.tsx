@@ -1,24 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import {
-  GestureDetector,
-  Gesture,
-  Directions,
-} from 'react-native-gesture-handler';
 import {
   NavigationContainer,
   DarkTheme,
   createNavigationContainerRef,
 } from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
-import * as SplashScreen from 'expo-splash-screen';
 
-import { playSound } from './services/sound';
-import { AnotherComponent } from './AnotherComponent'; // TEMP OTHER_COMPONENT
+import * as SplashScreen from 'expo-splash-screen';
 
 import {
   RootStore,
@@ -26,69 +13,12 @@ import {
   setupRootStore,
 } from './models/rootStore';
 
-// TEMP COMPONENT 1
-const Component = () => {
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#faf',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
-
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app or not!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-};
-
-// TODO: NAVIGATION SHOULD BE TACKLED NEXT
-// https://reactnavigation.org/docs/typescript/
-// Should we handle the back button of android?
-// see https://docs.expo.dev/versions/latest/react-native/backhandler/ and navigation-utilities in oldApp
-type StackParamList = {
-  HomeScreen: undefined;
-  SecondScreen: { some: string };
-};
-
-const HomeScreen = ({
-  navigation,
-}: NativeStackScreenProps<StackParamList, 'HomeScreen'>) => {
-  // TEMP: Fling gesture
-  const fling = Gesture.Fling();
-  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
-
-  return (
-    <GestureDetector gesture={fling}>
-      <View>
-        <Component />
-        <AnotherComponent />
-        <Button
-          title="second"
-          onPress={() => navigation.navigate('SecondScreen', { some: 'param' })}
-        />
-      </View>
-    </GestureDetector>
-  );
-};
-
-const SecondScreen = ({
-  route,
-  navigation,
-}: NativeStackScreenProps<StackParamList, 'SecondScreen'>) => {
-  return (
-    <View>
-      <Text>{route.params.some} Hello</Text>
-      <Button title="back" onPress={() => navigation.goBack()} />
-    </View>
-  );
-};
+import { createNavigationStack } from './navigation';
+import { HomeScreen } from './screens/HomeScreen';
+import { SecondScreen } from './screens/SecondScreen';
 
 // Main App & Navigation
-const Stack = createNativeStackNavigator<StackParamList>();
+const Stack = createNavigationStack();
 export default function App() {
   const [rootStore, setRootStore] = useState<RootStore | undefined>(undefined);
   const [appIsReady, setAppIsReady] = useState(false);
