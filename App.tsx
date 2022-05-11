@@ -15,7 +15,7 @@ import {
 
 import { createNavigationStack } from './navigation';
 import { HomeScreen } from './screens/HomeScreen';
-import { SecondScreen } from './screens/SecondScreen';
+import { BookScreen } from './screens/BookScreen';
 
 // Main App & Navigation
 const Stack = createNavigationStack();
@@ -68,7 +68,7 @@ export default function App() {
       >
         <Stack.Navigator initialRouteName="HomeScreen">
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen name="SecondScreen" component={SecondScreen} />
+          <Stack.Screen name="BookScreen" component={BookScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </RootStoreProvider>

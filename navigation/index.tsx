@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export type StackParamList = {
   HomeScreen: undefined;
-  SecondScreen: { some: string };
+  BookScreen: { some: string };
 };
 
 export { NativeStackScreenProps } from '@react-navigation/native-stack';
