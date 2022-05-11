@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import { Instance, SnapshotOut, types, onSnapshot } from 'mobx-state-tree';
 
 import { BookStoreModel } from './bookStore';
+import { PageStoreModel } from './pageStore';
 
 // Functions
 const setupRootStore = async () => {
@@ -24,6 +25,7 @@ const createRootStoreExports = () => {
 // Main
 const RootStoreModel = types.model('RootStore').props({
   bookStore: types.optional(BookStoreModel, {}),
+  pageStore: types.optional(PageStoreModel, {}),
 });
 
 // Exports

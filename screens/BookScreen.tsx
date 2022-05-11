@@ -9,6 +9,8 @@ import { observer } from 'mobx-react-lite';
 
 import { StackParamList, NativeStackScreenProps } from '../navigation';
 import { playSound } from '../services/sound';
+import { useStores } from '../models/rootStore';
+
 
 const styles = StyleSheet.create({
   view: {
@@ -29,7 +31,17 @@ export const BookScreen: FC<
 > = observer(({ navigation, route }) => {
   // TEMP: Fling gesture
   const fling = Gesture.Fling();
-  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => playSound());
+  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => {});
+
+  const { pageStore } = useStores();
+
+  useEffect(() => {
+    const getPages = async () => {
+      await pageStore.getPages();
+      console.log(pageStore.pages);
+    };
+    getPages();
+  }, []);
 
   return (
     <GestureDetector gesture={fling}>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GetBooksResult } from '../../services/api/api.types';
+import { GetBooksResult, GetPagesResult } from '../../services/api/api.types';
 
 export const getBooks = async (): Promise<GetBooksResult> => {
   try {
@@ -15,17 +15,47 @@ export const getBooks = async (): Promise<GetBooksResult> => {
     }
 
     // transform the data into the format we are expecting (mapper)
-    const resultBooks = response.data.map((item) => ({
-      id: item.id,
-      title: item.title,
-      author: item.author,
-      cover: item.cover,
-      totalChapters: item.totalChapters,
-      status: item.status,
+    const resultBooks = response.data.map((book) => ({
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      cover: book.cover,
+      totalChapters: book.totalChapters,
+      status: book.status,
     }));
     return { kind: 'ok', books: resultBooks };
   } catch (e) {
     console.error('oops', e);
     return { kind: 'bad-data', books: [] };
+  }
+};
+
+export const getPages = async (page: number, size = 1): Promise<GetPagesResult> => {
+  try {
+    // make the api call ===> TODO: config env everything and sync?
+    const response = await axios.get<GetPagesResult['pages']>(
+      `http://10.0.0.14:3000/api/book/pages?page=${page}&size=${size}`
+    );
+
+    // the typical ways to die when calling an api
+    if (response.status !== 200) {
+      console.error('oops', response);
+      return { kind: 'error', pages: [] };
+    }
+
+    // transform the data into the format we are expecting (mapper)
+    const resultPages = response.data.map((page) => ({
+      id: page.id,
+      text: page.text,
+      sound: {
+        type: page.sound.type,
+        source: page.sound.source,
+        unique: page.sound.unique || false,
+      },
+    }));
+    return { kind: 'ok', pages: resultPages };
+  } catch (e) {
+    console.error('oops', e);
+    return { kind: 'bad-data', pages: [] };
   }
 };
