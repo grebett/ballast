@@ -6,7 +6,11 @@ import {
   Gesture,
   Directions,
 } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  DarkTheme,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
@@ -43,6 +47,8 @@ const Component = () => {
 
 // TODO: NAVIGATION SHOULD BE TACKLED NEXT
 // https://reactnavigation.org/docs/typescript/
+// Should we handle the back button of android?
+// see https://docs.expo.dev/versions/latest/react-native/backhandler/ and navigation-utilities in oldApp
 type StackParamList = {
   HomeScreen: undefined;
   SecondScreen: { some: string };
@@ -96,7 +102,7 @@ export default function App() {
         setupRootStore().then(setRootStore);
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (e) {
         console.warn(e);
       } finally {
@@ -125,10 +131,14 @@ export default function App() {
 
   return (
     <RootStoreProvider value={rootStore}>
-      <NavigationContainer onReady={onLayoutRootView}>
-        <Stack.Navigator>
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />
-            <Stack.Screen name="SecondScreen" component={SecondScreen} />
+      <NavigationContainer
+        onReady={onLayoutRootView}
+        theme={DarkTheme}
+        ref={createNavigationContainerRef()}
+      >
+        <Stack.Navigator initialRouteName="HomeScreen">
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="SecondScreen" component={SecondScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </RootStoreProvider>
