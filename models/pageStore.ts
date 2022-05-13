@@ -23,19 +23,19 @@ export const PageStoreModel = types
     increaseIndex: () => {
       const totalPages = self.pages.length;
       if (self.index + 1 >= totalPages) {
-        console.log(self.index);
+        // console.log(self.index);
         return;
       }
       self.index += 1;
-      console.log(self.index);
+      // console.log(self.index);
     },
     decreaseIndex: () => {
       if (self.index - 1 < 0) {
-        console.log(self.index);
+        // console.log(self.index);
         return;
       }
       self.index -= 1;
-      console.log(self.index);
+      // console.log(self.index);
     },
   }));
 

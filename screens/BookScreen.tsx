@@ -8,8 +8,8 @@ import {
 import { observer } from 'mobx-react-lite';
 
 import { StackParamList, NativeStackScreenProps } from '../navigation';
-import { playSound } from '../services/sound';
 import { useStores } from '../models/rootStore';
+import { Sound } from '../components/Sound';
 
 const styles = StyleSheet.create({
   view: {
@@ -49,6 +49,7 @@ export const BookScreen: FC<
         {pageStore.pages.length > 0 && (
           <Text style={styles.text}>
             {pageStore.pages[pageStore.index]?.text || ''}
+            <Sound data={pageStore.pages[pageStore.index].sound} />
           </Text>
         )}
         <Button title="back" onPress={() => navigation.goBack()} />
