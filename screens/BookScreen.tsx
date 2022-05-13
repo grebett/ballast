@@ -11,7 +11,6 @@ import { StackParamList, NativeStackScreenProps } from '../navigation';
 import { playSound } from '../services/sound';
 import { useStores } from '../models/rootStore';
 
-
 const styles = StyleSheet.create({
   view: {
     flex: 1,
@@ -29,24 +28,29 @@ const styles = StyleSheet.create({
 export const BookScreen: FC<
   NativeStackScreenProps<StackParamList, 'BookScreen'>
 > = observer(({ navigation, route }) => {
-  // TEMP: Fling gesture
-  const fling = Gesture.Fling();
-  fling.direction(Directions.LEFT | Directions.RIGHT).onEnd(() => {});
-
   const { pageStore } = useStores();
+  const flingLeft = Gesture.Fling()
+    .direction(Directions.LEFT)
+    .onEnd(() => pageStore.increaseIndex());
+  const flingRight = Gesture.Fling()
+    .direction(Directions.RIGHT)
+    .onEnd(() => pageStore.decreaseIndex());
 
   useEffect(() => {
     const getPages = async () => {
       await pageStore.getPages();
-      console.log(pageStore.pages);
     };
     getPages();
   }, []);
 
   return (
-    <GestureDetector gesture={fling}>
+    <GestureDetector gesture={Gesture.Race(flingLeft, flingRight)}>
       <View style={styles.view}>
-        <Text style={styles.text}>{route.params.some} Hello</Text>
+        {pageStore.pages.length > 0 && (
+          <Text style={styles.text}>
+            {pageStore.pages[pageStore.index]?.text || ''}
+          </Text>
+        )}
         <Button title="back" onPress={() => navigation.goBack()} />
       </View>
     </GestureDetector>

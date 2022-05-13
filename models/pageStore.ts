@@ -6,6 +6,7 @@ export const PageStoreModel = types
   .model('PageStore')
   .props({
     pages: types.optional(types.array(PageModel), []),
+    index: types.optional(types.number, 0), // TODO: later on keep track on which page the user is
   })
   .actions((self) => ({
     savePages: (PageSnapshots: PageSnapshot[]) => {
@@ -18,6 +19,23 @@ export const PageStoreModel = types
       if (result.kind === 'ok') {
         self.savePages(result.pages);
       }
+    },
+    increaseIndex: () => {
+      const totalPages = self.pages.length;
+      if (self.index + 1 >= totalPages) {
+        console.log(self.index);
+        return;
+      }
+      self.index += 1;
+      console.log(self.index);
+    },
+    decreaseIndex: () => {
+      if (self.index - 1 < 0) {
+        console.log(self.index);
+        return;
+      }
+      self.index -= 1;
+      console.log(self.index);
     },
   }));
 
