@@ -6,7 +6,7 @@ export const PageStoreModel = types
   .model('PageStore')
   .props({
     pages: types.optional(types.array(PageModel), []),
-    index: types.optional(types.number, 0), // TODO: later on keep track on which page the user is
+    index: types.optional(types.number, 0), // 0 TODO: later on keep track on which page the user is
   })
   .actions((self) => ({
     savePages: (PageSnapshots: PageSnapshot[]) => {
