@@ -8,7 +8,8 @@ import { SoundModel } from './sound';
 export const PageModel = types.model('Page').props({
   id: types.identifierNumber,
   text: types.string,
-  sound: SoundModel,
+  sounds: types.optional(types.array(SoundModel), []),
+  ends: types.array(types.number),
 });
 
 type PageType = Instance<typeof PageModel>;

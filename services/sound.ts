@@ -34,53 +34,53 @@ const fadeOut = (
   }, INTERVAL_MS);
 };
 
-const preventPlayIfAlreadyInSoundsMap = (soundData: SoundData) => {
-  if (soundsMap[soundData.source] !== undefined) {
-    return true;
-  }
-  return false;
-};
+// const preventPlayIfAlreadyInSoundsMap = (soundData: SoundData) => {
+//   if (soundsMap[soundData.source] !== undefined) {
+//     return true;
+//   }
+//   return false;
+// };
 
 export const playSound = async (soundData: SoundData) => {
   // 1) No Dupes
-  if (preventPlayIfAlreadyInSoundsMap(soundData)) {
-    return;
-  }
+  // if (preventPlayIfAlreadyInSoundsMap(soundData)) {
+  //   return;
+  // }
 
-  // 2) Fadeout other sounds of the same type if new sound is unique
-  if (soundData.unique === true) {
-    // console.log('DUMP HERE BECAUSE UNIQUE', dumpSoundsMap());
-    Object.entries(soundsMap)
-      .filter(([, sound]) => sound.type === soundData.type)
-      .forEach(([, sound]) => {
-        if (sound.instance) {
-          __DEBUG && console.log('💿 Fading out sound: ', sound.source);
-          // QUESTION: what happens if user keep going back and forth?
-          fadeOut(sound.instance, FADE_OUT_MS, () => {
-            delete soundsMap[sound.source];
-          }, sound.source);
-        }
-      });
-  }
+  // // 2) Fadeout other sounds of the same type if new sound is unique
+  // if (soundData.unique === true) {
+  //   // console.log('DUMP HERE BECAUSE UNIQUE', dumpSoundsMap());
+  //   Object.entries(soundsMap)
+  //     .filter(([, sound]) => sound.type === soundData.type)
+  //     .forEach(([, sound]) => {
+  //       if (sound.instance) {
+  //         __DEBUG && console.log('💿 Fading out sound: ', sound.source);
+  //         // QUESTION: what happens if user keep going back and forth?
+  //         fadeOut(sound.instance, FADE_OUT_MS, () => {
+  //           delete soundsMap[sound.source];
+  //         }, sound.source);
+  //       }
+  //     });
+  // }
 
-  // 3) Load and play new sound
-  __DEBUG && console.log('💿 Loading Sound', soundData);
-  const { sound } = await Audio.Sound.createAsync(
-    {
-      uri: soundData.source,
-    },
-    {},
-    (status: AVPlaybackStatus) => {
-      if (status.isLoaded && status.didJustFinish) {
-        __DEBUG && console.log('💿 Unloading sound: ', soundData.source);
-        sound.unloadAsync();
-        delete soundsMap[soundData.source];
-      }
-    }
-  );
-  soundsMap[soundData.source] = { ...soundData, instance: sound };
-  __DEBUG && console.log('💿 Playing sound', soundData.source);
-  await sound.playAsync();
+  // // 3) Load and play new sound
+  // __DEBUG && console.log('💿 Loading Sound', soundData);
+  // const { sound } = await Audio.Sound.createAsync(
+  //   {
+  //     uri: soundData.source,
+  //   },
+  //   {},
+  //   (status: AVPlaybackStatus) => {
+  //     if (status.isLoaded && status.didJustFinish) {
+  //       __DEBUG && console.log('💿 Unloading sound: ', soundData.source);
+  //       sound.unloadAsync();
+  //       delete soundsMap[soundData.source];
+  //     }
+  //   }
+  // );
+  // soundsMap[soundData.source] = { ...soundData, instance: sound };
+  // __DEBUG && console.log('💿 Playing sound', soundData.source);
+  // await sound.playAsync();
 };
 
 export const dumpSoundsMap = () => {

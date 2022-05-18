@@ -43,15 +43,12 @@ export const getPages = async (page: number, size = 1): Promise<GetPagesResult> 
       return { kind: 'error', pages: [] };
     }
 
-    // transform the data into the format we are expecting (mapper)
+    // TODO: transform the data into the format we are expecting (mapper) or do verfication check
     const resultPages = response.data.map((page) => ({
       id: page.id,
       text: page.text,
-      sound: {
-        type: page.sound.type,
-        source: page.sound.source,
-        unique: page.sound.unique || false,
-      },
+      sounds: page.sounds,
+      ends: page.ends,
     }));
     return { kind: 'ok', pages: resultPages };
   } catch (e) {

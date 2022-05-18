@@ -1,4 +1,4 @@
-import { Instance, SnapshotOut, types } from 'mobx-state-tree';
+import { Instance, SnapshotOut, types, cast } from 'mobx-state-tree';
 import { PageModel, PageSnapshot } from './page';
 import { getPages } from '../services/api/bookApi';
 
@@ -9,8 +9,15 @@ export const PageStoreModel = types
     index: types.optional(types.number, 0), // 0 TODO: later on keep track on which page the user is
   })
   .actions((self) => ({
-    savePages: (PageSnapshots: PageSnapshot[]) => {
-      self.pages.replace(PageSnapshots);
+    savePages: (pages: PageSnapshot[]) => {
+      self.pages.replace(
+        // https://stackoverflow.com/questions/55689302/mobx-state-tree-assign-to-array-type
+        pages.map((page) => ({
+          ...page,
+          sounds: cast(page.sounds),
+          ends: cast(page.ends),
+        }))
+      );
     },
   }))
   .actions((self) => ({

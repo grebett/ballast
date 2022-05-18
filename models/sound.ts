@@ -1,9 +1,19 @@
 import { Instance, SnapshotOut, types } from 'mobx-state-tree';
 
+const SourceModel = types.model('Source').props({
+  main: types.string,
+  loop: types.maybe(types.string),
+});
+
 export const SoundModel = types.model('Sound').props({
+  id: types.identifierNumber,
+  description: types.string,
   type: types.string,
-  unique: types.boolean,
-  source: types.string,
+  loop: types.boolean,
+  sources: SourceModel,
+  duration: types.number,
+  start: types.number,
+  delay: types.number,
 });
 
 type SoundType = Instance<typeof SoundModel>;

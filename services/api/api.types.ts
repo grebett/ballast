@@ -12,11 +12,22 @@ type Book = {
 type Page = {
   id: number;
   text: string;
-  sound: {
-    type: string;
-    source: string;
-    unique: boolean;
-  };
+  sounds: [
+    {
+      id: number;
+      description: string;
+      type: string;
+      loop: boolean;
+      sources: {
+        main: string;
+        loop: string;
+      };
+      duration: number;
+      start: number;
+      delay: number;
+    }
+  ],
+  ends: number[];
 };
 
 export type GetBooksResult = { kind: ResponseStatus; books: Book[] };
