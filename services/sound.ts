@@ -5,13 +5,15 @@ import { Sound as SoundData } from '../models/sound';
 type Sounds = { [key: string]: SoundData & { instance?: Audio.Sound } };
 
 const __DEBUG = false;
+const FADE_OUT_MS = 800;
 
 const soundsMap: Sounds = {};
 
 const fadeOut = (
   sound: Audio.Sound,
   duration: number,
-  deleteSoundInSoundsMap: () => void
+  deleteSoundInSoundsMap: () => void,
+  soundSource?: string,
 ) => {
   const INTERVAL_MS = 50;
   const invocations = Math.floor(duration / INTERVAL_MS);
@@ -23,9 +25,9 @@ const fadeOut = (
     sound.setVolumeAsync(easedVolume);
     if (refVolume <= 0) {
       clearInterval(interval);
-      __DEBUG && console.log('💿 Stopping Sound');
+      __DEBUG && console.log('💿 Stopping sound :', soundSource);
       sound.stopAsync();
-      __DEBUG && console.log('💿 Unloading Sound');
+      __DEBUG && console.log('💿 Unloading sound :', soundSource);
       sound.unloadAsync();
       deleteSoundInSoundsMap();
     }
@@ -47,14 +49,16 @@ export const playSound = async (soundData: SoundData) => {
 
   // 2) Fadeout other sounds of the same type if new sound is unique
   if (soundData.unique === true) {
+    // console.log('DUMP HERE BECAUSE UNIQUE', dumpSoundsMap());
     Object.entries(soundsMap)
       .filter(([, sound]) => sound.type === soundData.type)
       .forEach(([, sound]) => {
         if (sound.instance) {
           __DEBUG && console.log('💿 Fading out sound: ', sound.source);
-          fadeOut(sound.instance, 1000, () => {
+          // QUESTION: what happens if user keep going back and forth?
+          fadeOut(sound.instance, FADE_OUT_MS, () => {
             delete soundsMap[sound.source];
-          });
+          }, sound.source);
         }
       });
   }
@@ -71,7 +75,6 @@ export const playSound = async (soundData: SoundData) => {
         __DEBUG && console.log('💿 Unloading sound: ', soundData.source);
         sound.unloadAsync();
         delete soundsMap[soundData.source];
-        console.log(dumpSoundsMap());
       }
     }
   );
