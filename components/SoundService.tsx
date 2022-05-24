@@ -23,13 +23,15 @@ export const SoundService = ({
         // end all the sounds
         await endAllSounds();
         // play all the sounds including the "part" ones from the starting point
-        await playSounds(sounds);
+        await playSounds(sounds, true);
       } else if (readingDirection === READING_DIRECTIONS.FORWARD) {
         // end only the previous sounds that should ened
         await endSounds(ends);
         // play all the sounds but the "part" ones
-        await playSounds(sounds);
+        await playSounds(sounds, false);
       } else {
+        // on initial state, play all the sounds
+        await playSounds(sounds, true);
       }
     };
     playSoundAsync();

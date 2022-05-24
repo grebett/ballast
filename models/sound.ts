@@ -7,6 +7,7 @@ const SourceModel = types.model('Source').props({
 
 export const SoundModel = types.model('Sound').props({
   id: types.identifierNumber,
+  multipart: types.boolean,
   description: types.string,
   type: types.string,
   loop: types.boolean,

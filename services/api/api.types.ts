@@ -15,6 +15,7 @@ type Page = {
   sounds: [
     {
       id: number;
+      multipart: boolean;
       description: string;
       type: string;
       loop: boolean;

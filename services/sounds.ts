@@ -66,16 +66,25 @@ export const endAllSounds = () => {
   endSounds(Array.from(soundsMap.keys()));
 };
 
-export const playSounds = async (sounds: Sound[]) => {
-  // 1) No Dupes (or we could stop the previous one and launch a new one?)
+export const playSounds = async (sounds: Sound[], playParts = false) => {
+  // 1) No Dupes (or we could stop the previous one and launch a new one in the data, but cumbersome?)
   sounds = sounds.filter((sound) => soundsMap.get(sound.id) === undefined);
-  // 2) Load and play new sound
+
+  // 2) Don't play the parts of a multipart sound 
+  if (playParts === false) {
+    sounds = sounds.filter(
+      (sound) => sound.multipart === false || (sound.multipart === true && sound.start === 0)
+    );
+  }
+
+  // 3) Load and play new sounds
   __DEBUG && console.log('💿 Currently playing sounds:', dumpSoundsMap());
   __DEBUG &&
     console.log(
       '⬆️ Loading sound:',
       sounds.map((sound) => sound.description).toString()
     );
+
   sounds.forEach(async (sound) => {
     const { sound: loadedSound } = await Audio.Sound.createAsync(
       {
@@ -91,7 +100,6 @@ export const playSounds = async (sounds: Sound[]) => {
         }
       }
     );
-    // 3) Play the song (with delay if needed)
     if (sound.delay > 0) {
       setTimeout(() => playSound(sound, loadedSound), sound.delay);
     } else {
