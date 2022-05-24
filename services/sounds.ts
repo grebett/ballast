@@ -21,7 +21,6 @@ const soundsMap = new Map<number, Audio.Sound>();
 const fadeOut = (
   sound: Audio.Sound,
   duration: number,
-  deleteSoundInSoundsMap: () => void,
   soundId: number
 ) => {
   const INTERVAL_MS = 50;
@@ -38,7 +37,6 @@ const fadeOut = (
       sound.stopAsync();
       __DEBUG && console.log('⬇️ Unloading sound:', soundId);
       sound.unloadAsync();
-      deleteSoundInSoundsMap();
     }
   }, INTERVAL_MS);
 };
@@ -56,7 +54,8 @@ export const endSounds = (ends: number[]) => {
   ends.forEach((soundId) => {
     const sound = soundsMap.get(soundId);
     if (sound) {
-      fadeOut(sound, FADE_OUT_MS, () => soundsMap.delete(soundId), soundId);
+      fadeOut(sound, FADE_OUT_MS, soundId);
+      soundsMap.delete(soundId);
     }
   });
 };
@@ -103,7 +102,11 @@ export const playSounds = async (sounds: Sound[], playParts = false) => {
     if (sound.delay > 0) {
       setTimeout(() => playSound(sound, loadedSound), sound.delay);
     } else {
-      playSound(sound, loadedSound);
+      try {
+        playSound(sound, loadedSound);
+      } catch (e) {
+        console.error('oups', e);
+      }
     }
     return loadedSound;
   });
