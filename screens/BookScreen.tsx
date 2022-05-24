@@ -1,4 +1,4 @@
-import { useEffect, FC } from 'react';
+import { useEffect, useState, FC } from 'react';
 import { StyleSheet, Button, Text, View } from 'react-native';
 import {
   GestureDetector,
@@ -9,7 +9,7 @@ import { observer } from 'mobx-react-lite';
 
 import { StackParamList, NativeStackScreenProps } from '../navigation';
 import { useStores } from '../models/rootStore';
-import { SoundService } from '../components/SoundService';
+import { SoundService, READING_DIRECTIONS } from '../components/SoundService';
 
 const styles = StyleSheet.create({
   view: {
@@ -29,12 +29,22 @@ export const BookScreen: FC<
   NativeStackScreenProps<StackParamList, 'BookScreen'>
 > = observer(({ navigation, route }) => {
   const { pageStore } = useStores();
+  const [readingDirection, setReadingDirection] = useState<READING_DIRECTIONS>(
+    READING_DIRECTIONS.INITIAL
+  );
+
   const flingLeft = Gesture.Fling()
     .direction(Directions.LEFT)
-    .onEnd(() => pageStore.increaseIndex());
+    .onEnd(() => {
+      setReadingDirection(READING_DIRECTIONS.FORWARD);
+      pageStore.increaseIndex();
+    });
   const flingRight = Gesture.Fling()
     .direction(Directions.RIGHT)
-    .onEnd(() => pageStore.decreaseIndex());
+    .onEnd(() => {
+      setReadingDirection(READING_DIRECTIONS.BACKWARD);
+      pageStore.decreaseIndex();
+    });
 
   useEffect(() => {
     const getPages = async () => {
@@ -43,20 +53,21 @@ export const BookScreen: FC<
     getPages();
   }, []);
 
-  return (
+  return pageStore.pages.length > 0 ? (
     <GestureDetector gesture={Gesture.Race(flingLeft, flingRight)}>
       <View style={styles.view}>
-        {pageStore.pages.length > 0 && (
-          <Text style={styles.text}>
-            {pageStore.pages[pageStore.index]?.text || ''}
-            <SoundService
-              sounds={pageStore.pages[pageStore.index].sounds}
-              ends={pageStore.pages[pageStore.index].ends}
-            />
-          </Text>
-        )}
+        <Text style={styles.text}>
+          {pageStore.pages[pageStore.index]?.text || ''}
+          <SoundService
+            sounds={pageStore.pages[pageStore.index].sounds}
+            ends={pageStore.pages[pageStore.index].ends}
+            readingDirection={readingDirection}
+          />
+        </Text>
         <Button title="back" onPress={() => navigation.goBack()} />
       </View>
     </GestureDetector>
+  ) : (
+    <></>
   );
 });

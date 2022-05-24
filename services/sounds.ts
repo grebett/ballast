@@ -34,9 +34,9 @@ const fadeOut = (
     sound.setVolumeAsync(easedVolume);
     if (refVolume <= 0) {
       clearInterval(interval);
-      __DEBUG && console.log('💿 Stopping sound:', soundId); // I could do more but it's not logic to add data just for debug...
+      __DEBUG && console.log('⏹ Stopping sound:', soundId); // I could do more but it's not logic to add data just for debug...
       sound.stopAsync();
-      __DEBUG && console.log('💿 Unloading sound:', soundId);
+      __DEBUG && console.log('⬇️ Unloading sound:', soundId);
       sound.unloadAsync();
       deleteSoundInSoundsMap();
     }
@@ -44,7 +44,7 @@ const fadeOut = (
 };
 
 const playSound = (sound: Sound, loadedSound: Audio.Sound) => {
-  __DEBUG && console.log('💿 Playing sound:', __DEBUG_FORMAT_SOUNDS(sound));
+  __DEBUG && console.log('▶️ Playing sound:', __DEBUG_FORMAT_SOUNDS(sound));
   if (sound.start > 0) {
     loadedSound.setPositionAsync(sound.start);
   }
@@ -61,14 +61,19 @@ export const endSounds = (ends: number[]) => {
   });
 };
 
+export const endAllSounds = () => {
+  __DEBUG && console.log('⏹ Ending all currently playing sounds');
+  endSounds(Array.from(soundsMap.keys()));
+};
+
 export const playSounds = async (sounds: Sound[]) => {
   // 1) No Dupes (or we could stop the previous one and launch a new one?)
   sounds = sounds.filter((sound) => soundsMap.get(sound.id) === undefined);
-
   // 2) Load and play new sound
+  __DEBUG && console.log('💿 Currently playing sounds:', dumpSoundsMap());
   __DEBUG &&
     console.log(
-      '💿 Loading sound:',
+      '⬆️ Loading sound:',
       sounds.map((sound) => sound.description).toString()
     );
   sounds.forEach(async (sound) => {
@@ -80,8 +85,9 @@ export const playSounds = async (sounds: Sound[]) => {
       (status: AVPlaybackStatus) => {
         if (status.isLoaded && status.didJustFinish) {
           __DEBUG &&
-            console.log('💿 Unloading sound:', __DEBUG_FORMAT_SOUNDS(sound));
+            console.log('⬇️ Unloading sound:', __DEBUG_FORMAT_SOUNDS(sound));
           loadedSound.unloadAsync();
+          soundsMap.delete(sound.id);
         }
       }
     );
@@ -95,6 +101,4 @@ export const playSounds = async (sounds: Sound[]) => {
   });
 };
 
-export const dumpSoundsMap = () => {
-  console.log(soundsMap);
-};
+export const dumpSoundsMap = () => Array.from(soundsMap.keys());
