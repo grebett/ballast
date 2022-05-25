@@ -2,7 +2,9 @@ import { Audio, AVPlaybackStatus } from 'expo-av';
 import { easeInOutSine } from '../utils/easings';
 import { Sound } from '../models/sound';
 
-// DEBUG
+/**********
+/* DEBUG
+***********/
 const __DEBUG = true;
 const __soundToString = (sound: Sound, more = false) =>
   more
@@ -13,32 +15,36 @@ const __DEBUG_FORMAT_SOUNDS = (sounds: Sound[] | Sound) =>
     ? sounds.map((sound) => __soundToString(sound)).join(', ')
     : __soundToString(sounds as unknown as Sound);
 
-// CONSTS
+/**********
+/* CONSTS
+***********/
 const FADE_OUT_MS = 800;
 
+/**********
+/* SOUNDMAP
+***********/
 const soundsMap = new Map<number, Audio.Sound>();
 
-const fadeOut = (
-  sound: Audio.Sound,
-  duration: number,
-  soundId: number
-) => {
+/**********
+/* UTILS
+***********/
+const fadeOut = async (sound: Audio.Sound, duration: number) => {
   const INTERVAL_MS = 50;
   const invocations = Math.floor(duration / INTERVAL_MS);
   let refVolume = 1;
   const volumeStep = refVolume / invocations;
-  const interval = setInterval(() => {
-    refVolume = refVolume - volumeStep;
-    const easedVolume = easeInOutSine(refVolume); // we may need other easings there (depending on taste!)
-    sound.setVolumeAsync(easedVolume);
-    if (refVolume <= 0) {
-      clearInterval(interval);
-      __DEBUG && console.log('⏹ Stopping sound:', soundId); // I could do more but it's not logic to add data just for debug...
-      sound.stopAsync();
-      __DEBUG && console.log('⬇️ Unloading sound:', soundId);
-      sound.unloadAsync();
-    }
-  }, INTERVAL_MS);
+
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      refVolume = refVolume - volumeStep;
+      const easedVolume = easeInOutSine(refVolume); // we may need other easings there (depending on taste!)
+      sound.setVolumeAsync(easedVolume);
+      if (refVolume <= 0) {
+        clearInterval(interval);
+        resolve(true);
+      }
+    }, INTERVAL_MS);
+  });
 };
 
 const playSound = (sound: Sound, loadedSound: Audio.Sound) => {
@@ -50,29 +56,62 @@ const playSound = (sound: Sound, loadedSound: Audio.Sound) => {
   soundsMap.set(sound.id, loadedSound);
 };
 
-export const endSounds = (ends: number[]) => {
-  ends.forEach((soundId) => {
-    const sound = soundsMap.get(soundId);
-    if (sound) {
-      fadeOut(sound, FADE_OUT_MS, soundId);
-      soundsMap.delete(soundId);
-    }
-  });
+const stopAndUnloadSound = async (sound: Audio.Sound, soundId: number) => {
+  // if we want more than id, store the sound description in map?
+  __DEBUG && console.log('⏹ Stopping sound:', soundId);
+  await sound.stopAsync();
+  __DEBUG && console.log('⬇️ Unloading sound:', soundId);
+  await sound.unloadAsync();
 };
 
-export const endAllSounds = () => {
+/**********
+/* EXPORTS
+***********/
+// This function ends only specific playing sounds from the soundMap, identified by their soundId
+export const endSounds = (ends: number[], fadeout = true) =>
+  Promise.all(
+    ends.map(async (soundId) => {
+      const sound = soundsMap.get(soundId);
+      if (sound) {
+        // first delete async the sound from the soundmap (so that we can play it again while it fades)
+        // NOTE: if we want to change that behaviour, put this in sync somewhere
+        soundsMap.delete(soundId);
+
+        // then fadeout the currently playing sound
+        if (fadeout) {
+          await fadeOut(sound, FADE_OUT_MS);
+        }
+        await stopAndUnloadSound(sound, soundId);
+      }
+    })
+  );
+
+// Those two functions look into the sound map to end all the currently playing sounds
+// 1) with fadeout
+export const endAllSounds = async () => {
   __DEBUG && console.log('⏹ Ending all currently playing sounds');
-  endSounds(Array.from(soundsMap.keys()));
+  await endSounds(Array.from(soundsMap.keys()));
 };
+
+// 2) without fadeout
+export const endAllSoundsImmediately = async () => {
+  __DEBUG && console.log('⏹ Ending all currently playing sounds immediately');
+  await endSounds(Array.from(soundsMap.keys()), false);
+};
+
+export const disableAudio = async () => await Audio.setIsEnabledAsync(false);
+export const enableAudio = async () => await Audio.setIsEnabledAsync(true);
 
 export const playSounds = async (sounds: Sound[], playParts = false) => {
   // 1) No Dupes (or we could stop the previous one and launch a new one in the data, but cumbersome?)
   sounds = sounds.filter((sound) => soundsMap.get(sound.id) === undefined);
 
-  // 2) Don't play the parts of a multipart sound 
+  // 2) Don't play the parts of a multipart sound
   if (playParts === false) {
     sounds = sounds.filter(
-      (sound) => sound.multipart === false || (sound.multipart === true && sound.start === 0)
+      (sound) =>
+        sound.multipart === false ||
+        (sound.multipart === true && sound.start === 0)
     );
   }
 
@@ -84,32 +123,32 @@ export const playSounds = async (sounds: Sound[], playParts = false) => {
       sounds.map((sound) => sound.description).toString()
     );
 
-  sounds.forEach(async (sound) => {
-    const { sound: loadedSound } = await Audio.Sound.createAsync(
-      {
-        uri: sound.sources.main,
-      },
-      {},
-      (status: AVPlaybackStatus) => {
-        if (status.isLoaded && status.didJustFinish) {
-          __DEBUG &&
-            console.log('⬇️ Unloading sound:', __DEBUG_FORMAT_SOUNDS(sound));
-          loadedSound.unloadAsync();
-          soundsMap.delete(sound.id);
+  try {
+    sounds.forEach(async (sound) => {
+      const { sound: loadedSound } = await Audio.Sound.createAsync(
+        {
+          uri: sound.sources.main,
+        },
+        {},
+        (status: AVPlaybackStatus) => {
+          if (status.isLoaded && status.didJustFinish) {
+            __DEBUG &&
+              console.log('⬇️ Unloading sound:', __DEBUG_FORMAT_SOUNDS(sound));
+            loadedSound.unloadAsync();
+            soundsMap.delete(sound.id);
+          }
         }
-      }
-    );
-    if (sound.delay > 0) {
-      setTimeout(() => playSound(sound, loadedSound), sound.delay);
-    } else {
-      try {
+      );
+      if (sound.delay > 0) {
+        setTimeout(() => playSound(sound, loadedSound), sound.delay);
+      } else {
         playSound(sound, loadedSound);
-      } catch (e) {
-        console.error('oups', e);
       }
-    }
-    return loadedSound;
-  });
+      return loadedSound;
+    });
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 export const dumpSoundsMap = () => Array.from(soundsMap.keys());
