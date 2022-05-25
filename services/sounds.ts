@@ -67,7 +67,6 @@ const stopAndUnloadSound = async (sound: Audio.Sound, soundId: number) => {
 /**********
 /* EXPORTS
 ***********/
-// This function ends only specific playing sounds from the soundMap, identified by their soundId
 export const endSounds = (ends: number[], fadeout = true) =>
   Promise.all(
     ends.map(async (soundId) => {
@@ -86,16 +85,8 @@ export const endSounds = (ends: number[], fadeout = true) =>
     })
   );
 
-// Those two functions look into the sound map to end all the currently playing sounds
-// 1) with fadeout
-export const endAllSounds = async () => {
-  __DEBUG && console.log('⏹ Ending all currently playing sounds');
-  await endSounds(Array.from(soundsMap.keys()));
-};
-
-// 2) without fadeout
 export const endAllSoundsImmediately = async () => {
-  __DEBUG && console.log('⏹ Ending all currently playing sounds immediately');
+  __DEBUG && console.log('⏹ Ending all currently playing sounds immediately (with no fadeout');
   await endSounds(Array.from(soundsMap.keys()), false);
 };
 

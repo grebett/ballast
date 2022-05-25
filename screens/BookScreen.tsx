@@ -58,13 +58,13 @@ export const BookScreen: FC<
       <View style={styles.view}>
         <Text style={styles.text}>
           {pageStore.pages[pageStore.index]?.text || ''}
-          <SoundService
-            sounds={pageStore.pages[pageStore.index].sounds}
-            ends={pageStore.pages[pageStore.index].ends}
-            readingDirection={readingDirection}
-          />
         </Text>
         <Button title="back" onPress={() => navigation.goBack()} />
+        <SoundService
+          sounds={pageStore.pages[pageStore.index].sounds}
+          ends={pageStore.pages[pageStore.index].ends}
+          readingDirection={readingDirection}
+        />
       </View>
     </GestureDetector>
   ) : (

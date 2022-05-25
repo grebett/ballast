@@ -3,7 +3,6 @@ import { StyleSheet, Button, Text, View } from 'react-native';
 
 import {
   endSounds,
-  endAllSounds,
   playSounds,
   disableAudio,
   enableAudio,
@@ -16,6 +15,12 @@ export enum READING_DIRECTIONS {
   FORWARD,
   BACKWARD,
 }
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: 'white',
+  }
+});
 
 export const SoundService = ({
   sounds,
@@ -33,17 +38,17 @@ export const SoundService = ({
       if (audioEnabled) {
         switch (readingDirection) {
           case READING_DIRECTIONS.BACKWARD: {
-            await endAllSounds();
-            await playSounds(sounds, { playParts: true });
+            await endAllSoundsImmediately();
+            playSounds(sounds, { playParts: true });
             return;
           }
           case READING_DIRECTIONS.FORWARD: {
-            await endSounds(ends);
-            await playSounds(sounds, { playParts: false });
+            endSounds(ends);
+            playSounds(sounds, { playParts: false });
             return;
           }
           default: {
-            await playSounds(sounds, { playParts: true });
+            playSounds(sounds, { playParts: true });
           }
         }
       }
@@ -52,19 +57,21 @@ export const SoundService = ({
   }, [sounds, ends]);
 
   return (
-    <Button
-      title={audioEnabled ? 'Couper le son' : 'Réactiver le son'}
-      onPress={async () =>
-        audioEnabled
-          ? await endAllSoundsImmediately().then(async () => {
-              await disableAudio();
-              setAudioState(false);
-            })
-          : await enableAudio().then(async () => {
-              await playSounds(sounds, { playParts: true });
-              setAudioState(true);
-            })
-      }
-    ></Button>
+    <View style={styles.button}>
+      <Button
+        title={audioEnabled ? 'Couper le son' : 'Réactiver le son'}
+        onPress={async () =>
+          audioEnabled
+            ? await endAllSoundsImmediately().then(async () => {
+                await disableAudio();
+                setAudioState(false);
+              })
+            : await enableAudio().then(async () => {
+                await playSounds(sounds, { playParts: true });
+                setAudioState(true);
+              })
+        }
+      ></Button>
+    </View>
   );
 };
