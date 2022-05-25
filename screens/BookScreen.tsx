@@ -10,6 +10,7 @@ import { observer } from 'mobx-react-lite';
 import { StackParamList, NativeStackScreenProps } from '../navigation';
 import { useStores } from '../models/rootStore';
 import { SoundService, READING_DIRECTIONS } from '../components/SoundService';
+import { load, save } from '../services/storage';
 
 const styles = StyleSheet.create({
   view: {
@@ -38,16 +39,22 @@ export const BookScreen: FC<
     .onEnd(() => {
       setReadingDirection(READING_DIRECTIONS.FORWARD);
       pageStore.increaseIndex();
+      save('pageIndex', pageStore.index);
     });
   const flingRight = Gesture.Fling()
     .direction(Directions.RIGHT)
     .onEnd(() => {
       setReadingDirection(READING_DIRECTIONS.BACKWARD);
       pageStore.decreaseIndex();
+      save('pageIndex', pageStore.index);
     });
 
   useEffect(() => {
     const getPages = async () => {
+      const storedPageIndex = await load('pageIndex');
+      if (!isNaN(storedPageIndex)) {
+        pageStore.setIndex(storedPageIndex);
+      } 
       await pageStore.getPages();
     };
     getPages();

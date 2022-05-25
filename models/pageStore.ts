@@ -27,22 +27,21 @@ export const PageStoreModel = types
         self.savePages(result.pages);
       }
     },
+    setIndex: (index: number) => {
+      self.index = index;
+    },
     increaseIndex: () => {
       const totalPages = self.pages.length;
       if (self.index + 1 >= totalPages) {
-        // console.log(self.index);
         return;
       }
       self.index += 1;
-      // console.log(self.index);
     },
     decreaseIndex: () => {
       if (self.index - 1 < 0) {
-        // console.log(self.index);
         return;
       }
       self.index -= 1;
-      // console.log(self.index);
     },
   }));
 
