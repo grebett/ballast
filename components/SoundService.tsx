@@ -31,19 +31,20 @@ export const SoundService = ({
   useEffect(() => {
     const playSoundAsync = async () => {
       if (audioEnabled) {
-        if (readingDirection === READING_DIRECTIONS.BACKWARD) {
-          // end all the sounds
-          await endAllSounds();
-          // play all the sounds including the "part" ones from the starting point
-          await playSounds(sounds, true);
-        } else if (readingDirection === READING_DIRECTIONS.FORWARD) {
-          // end only the previous sounds that should ened
-          await endSounds(ends);
-          // play all the sounds but the "part" ones
-          await playSounds(sounds, false);
-        } else {
-          // on initial state, play all the sounds
-          await playSounds(sounds, true);
+        switch (readingDirection) {
+          case READING_DIRECTIONS.BACKWARD: {
+            await endAllSounds();
+            await playSounds(sounds, { playParts: true });
+            return;
+          }
+          case READING_DIRECTIONS.FORWARD: {
+            await endSounds(ends);
+            await playSounds(sounds, { playParts: false });
+            return;
+          }
+          default: {
+            await playSounds(sounds, { playParts: true });
+          }
         }
       }
     };
@@ -60,7 +61,7 @@ export const SoundService = ({
               setAudioState(false);
             })
           : await enableAudio().then(async () => {
-              await playSounds(sounds, true);
+              await playSounds(sounds, { playParts: true });
               setAudioState(true);
             })
       }

@@ -102,12 +102,12 @@ export const endAllSoundsImmediately = async () => {
 export const disableAudio = async () => await Audio.setIsEnabledAsync(false);
 export const enableAudio = async () => await Audio.setIsEnabledAsync(true);
 
-export const playSounds = async (sounds: Sound[], playParts = false) => {
+export const playSounds = async (sounds: Sound[], options = { playParts: false }) => {
   // 1) No Dupes (or we could stop the previous one and launch a new one in the data, but cumbersome?)
   sounds = sounds.filter((sound) => soundsMap.get(sound.id) === undefined);
 
   // 2) Don't play the parts of a multipart sound
-  if (playParts === false) {
+  if (options.playParts === false) {
     sounds = sounds.filter(
       (sound) =>
         sound.multipart === false ||
