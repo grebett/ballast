@@ -66,7 +66,10 @@ export default function App() {
         theme={DarkTheme}
         ref={createNavigationContainerRef()}
       >
-        <Stack.Navigator initialRouteName="HomeScreen">
+        <Stack.Navigator
+          initialRouteName="HomeScreen"
+          screenOptions={{ headerShown: false }}
+        >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="BookScreen" component={BookScreen} />
         </Stack.Navigator>
