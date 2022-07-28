@@ -39,6 +39,7 @@ export const SoundService = ({
         switch (readingDirection) {
           case READING_DIRECTIONS.BACKWARD: {
             await endAllSoundsImmediately();
+            // TODO: play the sounds when they were stopped and no more simply at the current part
             playSounds(sounds, { playParts: true });
             return;
           }

@@ -47,6 +47,25 @@ const fadeOut = async (sound: Audio.Sound, duration: number) => {
   });
 };
 
+const fadeIn = async (sound: Audio.Sound, duration: number) => {
+  const INTERVAL_MS = 50;
+  const invocations = Math.floor(duration / INTERVAL_MS);
+  let refVolume = 0;
+  const volumeStep = refVolume / invocations;
+
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      refVolume = refVolume + volumeStep;
+      const easedVolume = easeInOutSine(refVolume); // we may need other easings there (depending on taste!)
+      sound.setVolumeAsync(easedVolume);
+      if (refVolume >= 1) {
+        clearInterval(interval);
+        resolve(true);
+      }
+    }, INTERVAL_MS);
+  });
+};
+
 const playSound = (sound: Sound, loadedSound: Audio.Sound) => {
   __DEBUG && console.log('▶️ Playing sound:', __DEBUG_FORMAT_SOUNDS(sound));
   if (sound.start > 0) {
