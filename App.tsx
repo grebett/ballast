@@ -67,7 +67,7 @@ export default function App() {
         ref={createNavigationContainerRef()}
       >
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="BookScreen"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />

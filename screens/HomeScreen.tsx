@@ -74,7 +74,7 @@ export const HomeScreen: FC<
   return (
     <View style={styles.view}>
       {/* <Text style={styles.text}>{text}</Text> */}
-      {/* <Image style={styles.image} source={{uri: Image.resolveAssetSource(DefaultImage).uri}} /> */}
+      <Image style={styles.image} source={{uri: Image.resolveAssetSource(DefaultImage).uri}} />
       {/* <Video
         style={styles.video}
         source={{uri: Image.resolveAssetSource(DefaultVideo).uri}}

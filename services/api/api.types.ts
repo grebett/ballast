@@ -15,16 +15,9 @@ type Page = {
   sounds: [
     {
       id: number;
-      multipart: boolean;
       description: string;
       type: string;
-      loop: boolean;
-      sources: {
-        main: string;
-        loop: string;
-      };
-      duration: number;
-      start: number;
+      parts: { source: string }[];
       delay: number;
     }
   ],

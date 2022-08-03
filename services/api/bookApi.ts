@@ -5,7 +5,7 @@ export const getBooks = async (): Promise<GetBooksResult> => {
   try {
     // make the api call ===> TODO: config env everything and sync?
     const response = await axios.get<GetBooksResult['books']>(
-      `http://10.0.0.14:3000/api/book`
+      `http://10.0.0.10:3000/api/book`
     );
 
     // the typical ways to die when calling an api
@@ -34,7 +34,7 @@ export const getPages = async (page: number, size = 1): Promise<GetPagesResult> 
   try {
     // make the api call ===> TODO: config env everything and sync?
     const response = await axios.get<GetPagesResult['pages']>(
-      `http://10.0.0.14:3000/api/book/pages?page=${page}&size=${size}`
+      `http://10.0.0.10:3000/api/book/pages?page=${page}&size=${size}`
     );
 
     // the typical ways to die when calling an api
@@ -50,6 +50,7 @@ export const getPages = async (page: number, size = 1): Promise<GetPagesResult> 
       sounds: page.sounds,
       ends: page.ends,
     }));
+    console.log(page);
     return { kind: 'ok', pages: resultPages };
   } catch (e) {
     console.error('oops', e);

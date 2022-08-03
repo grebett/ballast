@@ -53,7 +53,7 @@ export const BookScreen: FC<
     const getPages = async () => {
       const storedPageIndex = await load('pageIndex');
       if (!isNaN(storedPageIndex)) {
-        pageStore.setIndex(storedPageIndex);
+        pageStore.setIndex(0);
       } 
       await pageStore.getPages();
     };

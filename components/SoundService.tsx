@@ -40,16 +40,16 @@ export const SoundService = ({
           case READING_DIRECTIONS.BACKWARD: {
             await endAllSoundsImmediately();
             // TODO: play the sounds when they were stopped and no more simply at the current part
-            playSounds(sounds, { playParts: true });
+            playSounds(sounds);
             return;
           }
           case READING_DIRECTIONS.FORWARD: {
             endSounds(ends);
-            playSounds(sounds, { playParts: false });
+            playSounds(sounds);
             return;
           }
           default: {
-            playSounds(sounds, { playParts: true });
+            playSounds(sounds);
           }
         }
       }
@@ -68,7 +68,7 @@ export const SoundService = ({
                 setAudioState(false);
               })
             : await enableAudio().then(async () => {
-                await playSounds(sounds, { playParts: true });
+                await playSounds(sounds);
                 setAudioState(true);
               })
         }
